@@ -2,8 +2,11 @@
 import random
 
 class Domino: 
+
+    #Variables
     leftSide = 0
     rightSide = 0
+
     is_Horizontal= True
     Double = False
     Top = -1

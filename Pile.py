@@ -15,6 +15,7 @@ class Pile:
                 self.pile.append(Domino(i,j))
         random.shuffle(self.pile)
         self.CalcTiles()
+        print(f"Pile initialized with {self.numTiles} tiles")
 
 
 

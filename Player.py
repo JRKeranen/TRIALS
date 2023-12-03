@@ -25,14 +25,14 @@ class Player:
 
     # WORKS
     def PlayTile(self, dom):
-        
+        x = dom
         self.Hand.remove(dom)
         self.CalcHandSize()
+        return x
 
     # DONE
     def CalcHandSize(self):
         self.handSize = len(self.Hand) 
-        print(f"From Player hand length {len(self.Hand)}")
 
 
     # DONE
