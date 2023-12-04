@@ -3,24 +3,32 @@ from DominoClass import Domino
 
 
 class Player:
+    #Name 
     positionOnTable = 0   # 1,2,3,4    player 2 would be the play clockwise to 1
-    Hand = []
+    #Hand = []
     handSize = 0
     goFirstValue = 0
   # maybe thread
   
     # DONE
-    def __init__(self, position):
-        self.position = position
-        self.hand = []
+    def __init__(self, position, Name):
+        self.Name = Name
+        self.positionOnTable = position
+        self.Hand = []
         self.goFirstValue = 0
         self.CalcHandSize()
-
 
     # DONE
     def AddToHand(self, dom):
         self.Hand.append(dom)
         self.CalcHandSize()
+    
+    # DONE
+    def PrintHand(self):
+        print("",end="")
+        for i in self.Hand:
+            print(f" ({i.GetLeftSide()}, {i.GetRightSide()}) ",end="")
+        print("")
 
 
     # WORKS
@@ -44,3 +52,9 @@ class Player:
         else:
             return sum
         return sum
+    
+    def TestPlayTile(self):
+        x = self.Hand[0]
+        self.Hand.remove(x)
+        self.CalcHandSize()
+        return x

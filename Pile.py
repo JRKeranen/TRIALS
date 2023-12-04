@@ -37,6 +37,7 @@ class Pile:
             return -1
         else:
             i = random.randint(0, (self.numTiles -1))
+            dom = Domino(0,0)
             dom = self.pile[i]
             self.pile.remove(dom)
             self.CalcTiles()
