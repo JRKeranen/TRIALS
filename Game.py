@@ -21,18 +21,6 @@ class Game:
         self.board = Board()
         self.data_Lock = threading.Lock()
         self.current_Turn = 0
-        self.rounds = 0
-
-
-
-    def CreatePlayers(self, numplayer):
-        ListPlayer = Player
-        List = []
-        for i in range(numplayer):
-            print(i)
-            name = input("Input Player Name: ")
-            List.append(Player(i, name ))
-        return List
 
 
 
@@ -42,10 +30,23 @@ class Game:
         self.Players = self.CreatePlayers(self.num_Players)
         # Get first player
         self.current_Turn = self.GetFirstPlayer()
+        print(f"Player in position {self.current_Turn} has the first turn")
         # Draw 7 dominos for each player
         self.InitialDraw()
         ########## start middle game with player with highest value as first turn
         self.GameInProgress()
+
+
+
+
+    def CreatePlayers(self, numplayer):
+        ListPlayer = Player
+        List = []
+        for i in range(numplayer):
+            name = input("Input Player Name: ")
+            List.append(Player(i, name ))
+        return List
+    
 
 
 
@@ -91,7 +92,7 @@ class Game:
                 if(self.BonePit.CanPick() == True):
                     self.Players[self.current_Turn].AddToHand(self.BonePit.Pick())
                     Has_Chosen_Tile = True
-                    print(f"{self.Players[self.current_Turn].Name} Choosen a Tile")
+                    print(f"{self.Players[self.current_Turn].Name} has Drawn a Tile From the Bone Pit")
                 else:
                     self.passes_In_a_Row += 1
                     print(f"{self.Players[self.current_Turn].Name} Player passed because it could not pick")
@@ -106,11 +107,11 @@ class Game:
         # first player picks random tile and adds to board
         self.Players[self.current_Turn].TestPlayTile()
         self.ChangeTurn()
-        self.Players[self.current_Turn].PrintHand()
+        #self.Players[self.current_Turn].PrintHand()
         ######## MAIN LOOP ########
         threadList = []
         for player in self.Players:
-            print(player.positionOnTable)
+            #print(player.positionOnTable)
             threadList.append(threading.Thread(target=self.MainGameLoop, args=[player.positionOnTable, player.positionOnTable]))
         for t in threadList:
             #t.daemon = True
@@ -181,12 +182,11 @@ class Game:
     def InitialDraw(self):
         #pass 7 tiles from BonePit to player hand
         for player in self.Players:
-            print(f"---- Player {player.Name} {player.positionOnTable}\n")
             for i in range(7):
                 fillerDom = self.BonePit.Pick()
                 player.AddToHand(fillerDom)
         for player in self.Players:
-            print(f"{player.Name} {player.positionOnTable}")
+            print(f"{player.Name} Initial Hand")
             player.PrintHand()
             print("")
 
