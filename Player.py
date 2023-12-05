@@ -33,6 +33,8 @@ class Player:
 
     # WORKS
     def PlayTile(self, dom):
+        if (len(self.Hand) < 1):
+            return -1
         x = dom
         self.Hand.remove(dom)
         self.CalcHandSize()
@@ -54,6 +56,8 @@ class Player:
         return sum
     
     def TestPlayTile(self):
+        if (len(self.Hand) < 1):
+            return -1
         x = self.Hand[0]
         self.Hand.remove(x)
         self.CalcHandSize()

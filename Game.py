@@ -20,6 +20,8 @@ class Game:
         self.passes_In_a_Row = 0
         self.board = Board()
         self.data_Lock = threading.Lock()
+        self.current_Turn = 0
+        self.rounds = 0
 
 
 
@@ -39,75 +41,87 @@ class Game:
         # create players
         self.Players = self.CreatePlayers(self.num_Players)
         # Get first player
-        first = self.GetFirstPlayer()
+        self.current_Turn = self.GetFirstPlayer()
         # Draw 7 dominos for each player
         self.InitialDraw()
         ########## start middle game with player with highest value as first turn
-        
-        threadList = []
-        for player in self.Players:
-            threadList.append(threading.Thread(target=self.GameInProgress, args=[first]))
-        for t in threadList:
-            t.start()
-        #self.GameInProgress(first)
-
-    def test2(self):
-        self.data_Lock.acquire()
-        print("sleeping for 2")
-        time.sleep(2)
-        print("slept")
-        self.data_Lock.release()
+        self.GameInProgress()
 
 
 
-    def GameInProgress(self, firstPlayer):
-        # first player picks random tile and adds to board
-        Current_Turn = firstPlayer
-        self.Players[Current_Turn].TestPlayTile()
-        self.Players[Current_Turn].PrintHand()
-        ######## MAIN LOOP ########
+    def MainGameLoop(self, player_num, threadNum):
+        time.sleep(.5)
+        print(f"Main Loop Funtion Initiated for thread {threadNum}")
+
         while self.in_Progress is True:
-            self.data_Lock.acquire()
+            if (self.current_Turn == threadNum):
+                self.data_Lock.acquire()
+                print(f"Lock Aquired on {threadNum}")
+            else:
+                time.sleep(.1)
+                continue
+
             # 1 checks for winner
             if (self.HasPlayerWon() != -1):
                 self.PrintWinner(self.HasPlayerWon())
                 self.in_Progress = False
                 self.data_Lock.release()
+                self.in_Progress = False
                 break
-            # 2 - next person turn
-            Current_Turn = self.ChangeTurn(Current_Turn)
+
             #### Can Play Loop ####
             Has_Chosen_Tile = False
             for i in range(2):
                 # Check if player can play tile
                 if (self.CanPlaceTile() == True):
-                    self.Players[Current_Turn].TestPlayTile()
-                    print(f"{self.Players[Current_Turn].Name} placed a tile")
+                    self.Players[self.current_Turn].TestPlayTile()
+                    print(f"{self.Players[self.current_Turn].Name} placed a tile")
                     self.passes_In_a_Row = 0
+                    self.ChangeTurn()
                     self.data_Lock.release()
                     break
                 # check if already grabbed tile
                 if (Has_Chosen_Tile == True):
                     self.passes_In_a_Row += 1
-                    print(f"{self.Players[Current_Turn].Name} Choose a tile, but couold not place it")
+                    print(f"{self.Players[self.current_Turn].Name} Choose a tile, but couold not place it")
+                    self.ChangeTurn()
                     self.data_Lock.release()
                     break
                 # check if player can pick
                 if(self.BonePit.CanPick() == True):
-                    self.Players[Current_Turn].AddToHand(self.BonePit.Pick())
+                    self.Players[self.current_Turn].AddToHand(self.BonePit.Pick())
                     Has_Chosen_Tile = True
-                    print(f"{self.Players[Current_Turn].Name} Choosen a Tile")
+                    print(f"{self.Players[self.current_Turn].Name} Choosen a Tile")
                 else:
                     self.passes_In_a_Row += 1
-                    print(f"{self.Players[Current_Turn].Name} Player passed because it could not pick")
+                    print(f"{self.Players[self.current_Turn].Name} Player passed because it could not pick")
+                    self.ChangeTurn()
                     self.data_Lock.release()
                     break
+
+
+
+
+    def GameInProgress(self):
+        # first player picks random tile and adds to board
+        self.Players[self.current_Turn].TestPlayTile()
+        self.ChangeTurn()
+        self.Players[self.current_Turn].PrintHand()
+        ######## MAIN LOOP ########
+        threadList = []
+        for player in self.Players:
+            print(player.positionOnTable)
+            threadList.append(threading.Thread(target=self.MainGameLoop, args=[player.positionOnTable, player.positionOnTable]))
+        for t in threadList:
+            #t.daemon = True
+            t.start()
+           
+
 
     
 
 
     def HasPlayerWon(self):## if there is a winner, return player position, if no winner return -1
-
         # check if player has 0 tiles
         for player in self.Players:
             if (player.handSize == 0):
@@ -152,11 +166,13 @@ class Game:
 
 
 
-    def ChangeTurn(self, CurrentTurn):
-        CurrentTurn += 1
-        if (CurrentTurn >= self.num_Players):
-            return 0
-        return CurrentTurn
+    def ChangeTurn(self):
+        fillerTurn = self.current_Turn
+        fillerTurn += 1
+        if (fillerTurn >= self.num_Players):
+            self.current_Turn = 0
+        else:   
+            self.current_Turn = fillerTurn
 
 
         
