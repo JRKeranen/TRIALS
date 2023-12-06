@@ -62,3 +62,17 @@ class Player:
         self.Hand.remove(x)
         self.CalcHandSize()
         return x
+    
+    def GetDoubles(self):
+        doublesList = []
+        for doms in self.Hand:
+            if doms.Double == True:
+                doublesList.append(doms)
+        return doublesList
+    
+    def GetSingles(self):
+        singlesList = []
+        for doms in self.Hand:
+            if doms.Double == False:
+                singlesList.append(doms)
+        return singlesList

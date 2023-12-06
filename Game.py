@@ -1,6 +1,6 @@
 from Pile import Pile,random
 from Player import Player,Domino
-from TestBoard import Board
+from BoardClass import Board
 import threading
 import time
 
@@ -75,7 +75,9 @@ class Game:
             for i in range(2):
                 # Check if player can play tile
                 if (self.CanPlaceTile() == True):
-                    self.Players[self.current_Turn].TestPlayTile()
+                    #grab the domino to place
+                    tile = self.Players[self.current_Turn].TestPlayTile( )
+                    #place tile to board
                     print(f"{self.Players[self.current_Turn].Name} placed a tile")
                     self.passes_In_a_Row = 0
                     self.ChangeTurn()
@@ -105,7 +107,8 @@ class Game:
 
     def GameInProgress(self):
         # first player picks random tile and adds to board
-        self.Players[self.current_Turn].TestPlayTile()
+        dom = self.Players[self.current_Turn].TestPlayTile()
+        self.board.PlaceTile([dom,[]], 0)
         self.ChangeTurn()
         #self.Players[self.current_Turn].PrintHand()
         ######## MAIN LOOP ########
@@ -194,6 +197,10 @@ class Game:
 
     ####### NEED TO FINISH ######
     def CanPlaceTile(self):
-        #pass 7 tiles from BonePit to player hand
-        x = random.randint(0, 3)
-        return True if (x <=1) else False
+        singles = self.Players[self.current_Turn].GetSingles()
+        doubles = self.Players[self.current_Turn].GetDoubles()
+        played = self.board.CheckPlacement(singles, doubles)
+        if (played == -1):
+            return False
+        
+        return True

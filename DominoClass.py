@@ -9,12 +9,6 @@ class Domino:
 
     is_Horizontal= True
     Double = False
-    Top = -1
-    Bottom = -1
-    Left = -1
-    Right = -1
-    topLeftCord = [0,0]
-    bottomRightCord = [0,0]
     
 
     ##### DONE
@@ -33,16 +27,7 @@ class Domino:
     def GetRightSide(self):
         return self.rightSide
     
-    def SetPosition(self, is_horizontal, leftOtop, RightObottom):
-        if (is_horizontal == True):
-            self.is_Horizontal = True
-            self.Left = leftOtop
-            self.Right = RightObottom
-
-        else:
-            self.is_Horizontal = False
-            self.Top = leftOtop
-            self.Bottom = RightObottom
+    
     
     
     
